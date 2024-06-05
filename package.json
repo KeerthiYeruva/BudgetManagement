@@ -92,5 +92,5 @@
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.1"
   },
-  "description": "Expense Tracker"
+  "description": "Budget Management"
 }
