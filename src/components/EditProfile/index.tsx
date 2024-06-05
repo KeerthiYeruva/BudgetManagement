@@ -1,7 +1,18 @@
 import React, { useState } from "react";
 import { useStore } from "zustand";
 import { useUserProfileStore } from "../../store";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  SelectChangeEvent,
+} from "@mui/material";
+import { useThemeContext } from "../../styles/context";
 
 const EditProfile: React.FC = () => {
   const { user, updateUserProfile } = useStore(useUserProfileStore);
@@ -11,9 +22,16 @@ const EditProfile: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || "");
   const [income, setIncome] = useState(user?.income || 0);
 
+  const { themeName, setThemeName } = useThemeContext();
+  const availableThemes = ["light", "dark", "custom"];
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateUserProfile({ firstName, lastName, email, phoneNumber, income });
+  };
+
+  const handleThemeChange = (event: SelectChangeEvent<typeof themeName>) => {
+    setThemeName(event.target.value as typeof themeName);
   };
 
   return (
@@ -57,6 +75,20 @@ const EditProfile: React.FC = () => {
         fullWidth
         margin="normal"
       />
+      <FormControl fullWidth margin="normal">
+        <InputLabel id="theme-select-label">Theme</InputLabel>
+        <Select
+          labelId="theme-select-label"
+          value={themeName}
+          onChange={handleThemeChange}
+        >
+          {availableThemes.map((theme) => (
+            <MenuItem key={theme} value={theme}>
+              {theme.charAt(0).toUpperCase() + theme.slice(1)}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       <Button type="submit" variant="contained" color="primary">
         Save
       </Button>

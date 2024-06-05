@@ -11,7 +11,6 @@ import {
   ListItemIcon,
   ListItemButton,
   IconButton,
-  Button,
 } from "@mui/material";
 import {
   Home as HomeIcon,
@@ -24,13 +23,11 @@ import {
 import MainRoutes from "../../Routes/MainRoutes";
 import { useAuthStore } from "../../store";
 import { useStore } from "zustand";
-import { useThemeContext } from "../../styles/context";
 
 import "./home.scss";
 
 const Home: React.FC = () => {
   const { user } = useStore(useAuthStore);
-  const { toggleTheme } = useThemeContext(); // get the toggleTheme function
 
   return (
     <Box display="flex" height="100vh">
@@ -66,14 +63,7 @@ const Home: React.FC = () => {
             <EditIcon fontSize="small" />
           </IconButton>
         </Typography>
-        <Button
-          onClick={toggleTheme}
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2 }}
-        >
-          Toggle Theme
-        </Button>
+
         <Divider sx={{ width: "100%", mt: 2 }} />
         <List component="nav" sx={{ width: "100%", mt: 2 }}>
           <ListItem disablePadding>
