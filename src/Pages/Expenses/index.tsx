@@ -1,74 +1,90 @@
 import React, { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
 import { Box } from "@mui/material";
 import "./expenses.scss"; // Import predefined styles from a separate file
 
-const Expenses: React.FC = () => {
-  const [activeTab, setActiveTab] = useState("add");
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
 
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
+const TabPanel = (props: TabPanelProps) => {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+    </div>
+  );
+};
+
+const Expenses: React.FC = () => {
+  const location = useLocation();
+  const [value, setValue] = useState(() => {
+    switch (location.pathname) {
+      case "/expenses/manage-expenses":
+        return 1;
+      case "/expenses/add-category":
+        return 2;
+      default:
+        return 0;
+    }
+  });
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
   };
 
   return (
     <Box>
       <AppBar position="static">
         <Toolbar>
-          <NavLink
-            to="/expenses/add-expense"
-            className={`nav-link ${activeTab === "add" ? "active" : ""}`}
-            onClick={() => handleTabChange("add")}
-            style={{ textDecoration: "none" }}
+          <Tabs
+            value={value}
+            onChange={handleTabChange}
+            aria-label="expenses tabs"
+            textColor="inherit"
+            indicatorColor="primary"
           >
-            <Button
-              sx={{
-                color: activeTab === "add" ? "#fff" : "inherit",
-                backgroundColor:
-                  activeTab === "add" ? "primary.main" : "transparent",
-              }}
-            >
-              Add Expense
-            </Button>
-          </NavLink>
-          <NavLink
-            to="/expenses/manage-expenses"
-            className={`nav-link ${activeTab === "manage" ? "active" : ""}`}
-            onClick={() => handleTabChange("manage")}
-            style={{ textDecoration: "none" }}
-          >
-            <Button
-              sx={{
-                color: activeTab === "manage" ? "#fff" : "inherit",
-                backgroundColor:
-                  activeTab === "manage" ? "primary.main" : "transparent",
-              }}
-            >
-              Manage Expenses
-            </Button>
-          </NavLink>
-          <NavLink
-            to="/expenses/add-category"
-            className={`nav-link ${activeTab === "addCategory" ? "active" : ""}`}
-            onClick={() => handleTabChange("addCategory")}
-            style={{ textDecoration: "none" }}
-          >
-            <Button
-              sx={{
-                color: activeTab === "addCategory" ? "#fff" : "inherit",
-                backgroundColor:
-                  activeTab === "addCategory" ? "primary.main" : "transparent",
-              }}
-            >
-              Manage Category
-            </Button>
-          </NavLink>
+            <Tab
+              label="Add Expense"
+              component={NavLink}
+              to="/expenses/add-expense"
+            />
+            <Tab
+              label="Manage Expenses"
+              component={NavLink}
+              to="/expenses/manage-expenses"
+            />
+            <Tab
+              label="Manage Category"
+              component={NavLink}
+              to="/expenses/add-category"
+            />
+          </Tabs>
         </Toolbar>
       </AppBar>
       <Box className="tab-content mt-2">
-        <Outlet /> {/* This will render the child routes */}
+        <TabPanel value={value} index={0}>
+          <Outlet />
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <Outlet />
+        </TabPanel>
+        <TabPanel value={value} index={2}>
+          <Outlet />
+        </TabPanel>
       </Box>
     </Box>
   );
