@@ -1,0 +1,17 @@
+.nav-link {
+  text-decoration: none;
+  color: inherit;
+
+  .MuiTab-root {
+    color: inherit;
+    text-transform: none; // Optional: to keep the label text as-is
+  }
+
+  &.active .MuiTab-root {
+    color: #1976d2 !important; // Adjust this color to match your active tab color
+  }
+}
+
+.main-content {
+  padding: 16px;
+}
