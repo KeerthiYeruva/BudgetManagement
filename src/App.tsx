@@ -7,22 +7,23 @@ import Login from "./components/Login";
 import NotificationComponent from "./components/NotificationComponent";
 import Home from "./Pages/Home";
 import PrivateRoute from "./Routes/PrivateRoute";
-import AppThemeToggle from "./styles/components/AppThemeToggle";
+import { ThemeContextProvider } from "./styles/context";
 import "./App.scss";
 
 function App() {
   return (
-    <Container maxWidth="lg">
-      <CssBaseline />
-      <Box className="App" textAlign="center">
-        <AppThemeToggle />
-        <NotificationComponent />
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/*" element={<PrivateRoute element={<Home />} />} />
-        </Routes>
-      </Box>
-    </Container>
+    <ThemeContextProvider>
+      <Container maxWidth="xl">
+        <CssBaseline />
+        <Box className="App" textAlign="center">
+          <NotificationComponent />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/*" element={<PrivateRoute element={<Home />} />} />
+          </Routes>
+        </Box>
+      </Container>
+    </ThemeContextProvider>
   );
 }
 

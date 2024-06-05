@@ -11,6 +11,7 @@ import {
   ListItemIcon,
   ListItemButton,
   IconButton,
+  Button,
 } from "@mui/material";
 import {
   Home as HomeIcon,
@@ -22,14 +23,17 @@ import {
 } from "@mui/icons-material";
 import MainRoutes from "../../Routes/MainRoutes";
 import { useAuthStore } from "../../store";
-import "./home.scss";
 import { useStore } from "zustand";
+import { useThemeContext } from "../../styles/context";
+
+import "./home.scss";
 
 const Home: React.FC = () => {
   const { user } = useStore(useAuthStore);
+  const { toggleTheme } = useThemeContext(); // get the toggleTheme function
 
   return (
-    <Box display="flex" className="vh-100">
+    <Box display="flex" height="100vh">
       <Box
         component="aside"
         sx={{
@@ -37,29 +41,41 @@ const Home: React.FC = () => {
           bgcolor: "background.paper",
           borderRight: 1,
           borderColor: "divider",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          pt: 2,
         }}
       >
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          p={2}
-          bgcolor="grey.100"
+        <Avatar
+          src={"https://picsum.photos/seed/picsum/200/300"}
+          alt={`${user?.firstName || "User"}'s avatar`}
+          sx={{ width: 80, height: 80, mb: 2 }}
+        />
+        <Typography
+          variant="h6"
+          component="h3"
+          sx={{ display: "flex", alignItems: "center" }}
         >
-          <Avatar
-            src={"https://picsum.photos/seed/picsum/200/300"}
-            alt={`${user?.firstName || "User"}'s avatar`}
-            sx={{ width: 56, height: 56 }}
-          />
-          <Typography variant="h6" component="h3" sx={{ mt: 1 }}>
-            {user?.firstName || "User"}
-          </Typography>
-          <IconButton component={NavLink} to="/edit-profile" sx={{ ml: 1 }}>
-            <EditIcon />
+          {user?.firstName || "User"}
+          <IconButton
+            component={NavLink}
+            to="/edit-profile"
+            sx={{ ml: 1, p: 0 }}
+          >
+            <EditIcon fontSize="small" />
           </IconButton>
-        </Box>
-        <Divider />
-        <List component="nav">
+        </Typography>
+        <Button
+          onClick={toggleTheme}
+          variant="contained"
+          color="primary"
+          sx={{ mt: 2 }}
+        >
+          Toggle Theme
+        </Button>
+        <Divider sx={{ width: "100%", mt: 2 }} />
+        <List component="nav" sx={{ width: "100%", mt: 2 }}>
           <ListItem disablePadding>
             <ListItemButton component={NavLink} to="/" end>
               <ListItemIcon>
