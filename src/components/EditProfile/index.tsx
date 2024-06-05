@@ -22,12 +22,72 @@ const EditProfile: React.FC = () => {
   const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || "");
   const [income, setIncome] = useState(user?.income || 0);
 
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [phoneNumberError, setPhoneNumberError] = useState("");
+  const [incomeError, setIncomeError] = useState("");
+
   const { themeName, setThemeName } = useThemeContext();
   const availableThemes = ["light", "dark", "custom"];
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhoneNumber = (phoneNumber: string) => {
+    const phoneRegex = /^[0-9]{10,15}$/;
+    return phoneRegex.test(phoneNumber);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    updateUserProfile({ firstName, lastName, email, phoneNumber, income });
+
+    // Clear previous error messages
+    setFirstNameError("");
+    setLastNameError("");
+    setEmailError("");
+    setPhoneNumberError("");
+    setIncomeError("");
+
+    // Validate inputs
+    let isValid = true;
+
+    if (!firstName) {
+      setFirstNameError("First Name is required");
+      isValid = false;
+    }
+
+    if (!lastName) {
+      setLastNameError("Last Name is required");
+      isValid = false;
+    }
+
+    if (!email) {
+      setEmailError("Email is required");
+      isValid = false;
+    } else if (!validateEmail(email)) {
+      setEmailError("Invalid email format");
+      isValid = false;
+    }
+
+    if (!phoneNumber) {
+      setPhoneNumberError("Phone Number is required");
+      isValid = false;
+    } else if (!validatePhoneNumber(phoneNumber)) {
+      setPhoneNumberError("Invalid phone number format");
+      isValid = false;
+    }
+
+    if (income <= 0) {
+      setIncomeError("Income must be a positive number");
+      isValid = false;
+    }
+
+    if (isValid) {
+      updateUserProfile({ firstName, lastName, email, phoneNumber, income });
+    }
   };
 
   const handleThemeChange = (event: SelectChangeEvent<typeof themeName>) => {
@@ -45,6 +105,8 @@ const EditProfile: React.FC = () => {
         onChange={(e) => setFirstName(e.target.value)}
         fullWidth
         margin="normal"
+        error={!!firstNameError}
+        helperText={firstNameError}
       />
       <TextField
         label="Last Name"
@@ -52,6 +114,8 @@ const EditProfile: React.FC = () => {
         onChange={(e) => setLastName(e.target.value)}
         fullWidth
         margin="normal"
+        error={!!lastNameError}
+        helperText={lastNameError}
       />
       <TextField
         label="Email"
@@ -59,6 +123,8 @@ const EditProfile: React.FC = () => {
         onChange={(e) => setEmail(e.target.value)}
         fullWidth
         margin="normal"
+        error={!!emailError}
+        helperText={emailError}
       />
       <TextField
         label="Phone Number"
@@ -66,6 +132,8 @@ const EditProfile: React.FC = () => {
         onChange={(e) => setPhoneNumber(e.target.value)}
         fullWidth
         margin="normal"
+        error={!!phoneNumberError}
+        helperText={phoneNumberError}
       />
       <TextField
         label="Income"
@@ -74,6 +142,8 @@ const EditProfile: React.FC = () => {
         onChange={(e) => setIncome(Number(e.target.value))}
         fullWidth
         margin="normal"
+        error={!!incomeError}
+        helperText={incomeError}
       />
       <FormControl fullWidth margin="normal">
         <InputLabel id="theme-select-label">Theme</InputLabel>
