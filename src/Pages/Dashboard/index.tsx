@@ -32,8 +32,8 @@ const Dashboard: React.FC = () => {
     (total, expense) => total + expense.amount,
     0
   );
-  const income = user?.income || 0;
-  const balance = income - totalExpenses;
+
+  const balance = user?.income - totalExpenses;
   const totalTransactions = expenses.length;
 
   const groupExpensesByCategory = (expenses) => {
@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <InfoCard title="Income" value={`$${income}`} />
+              <InfoCard title="Income" value={`$${user.income}`} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <InfoCard title="Balance" value={`$${balance}`} />

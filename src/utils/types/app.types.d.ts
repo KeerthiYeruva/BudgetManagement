@@ -13,6 +13,7 @@ interface User {
   email: string;
   phoneNumber: string;
   income?: number;
+  incomePeriod?: "weekly" | "monthly" | "yearly";
 }
 
 interface Expense {

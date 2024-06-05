@@ -21,12 +21,14 @@ const EditProfile: React.FC = () => {
   const [email, setEmail] = useState(user?.email || "");
   const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || "");
   const [income, setIncome] = useState(user?.income || 0);
-
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneNumberError, setPhoneNumberError] = useState("");
   const [incomeError, setIncomeError] = useState("");
+  const [incomePeriod, setIncomePeriod] = useState<
+    "weekly" | "monthly" | "yearly"
+  >(user?.incomePeriod || "monthly");
 
   const { themeName, setThemeName } = useThemeContext();
   const availableThemes = ["light", "dark", "custom"];
@@ -94,6 +96,12 @@ const EditProfile: React.FC = () => {
     setThemeName(event.target.value as typeof themeName);
   };
 
+  const handleIncomePeriodChange = (
+    event: SelectChangeEvent<"weekly" | "monthly" | "yearly">
+  ) => {
+    setIncomePeriod(event.target.value as "weekly" | "monthly" | "yearly");
+  };
+
   return (
     <Box component="form" onSubmit={handleSubmit} p={3}>
       <Typography variant="h4" gutterBottom>
@@ -145,6 +153,18 @@ const EditProfile: React.FC = () => {
         error={!!incomeError}
         helperText={incomeError}
       />
+      <FormControl fullWidth margin="normal">
+        <InputLabel id="income-period-select-label">Income Period</InputLabel>
+        <Select
+          labelId="income-period-select-label"
+          value={incomePeriod}
+          onChange={handleIncomePeriodChange}
+        >
+          <MenuItem value="weekly">Weekly</MenuItem>
+          <MenuItem value="monthly">Monthly</MenuItem>
+          <MenuItem value="yearly">Yearly</MenuItem>
+        </Select>
+      </FormControl>
       <FormControl fullWidth margin="normal">
         <InputLabel id="theme-select-label">Theme</InputLabel>
         <Select
