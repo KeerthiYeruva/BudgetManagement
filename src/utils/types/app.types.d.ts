@@ -12,6 +12,7 @@ interface User {
   lastName: string;
   email: string;
   phoneNumber: string;
+  income?: number;
 }
 
 interface Expense {
