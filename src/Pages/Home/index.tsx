@@ -10,6 +10,7 @@ import {
   ListItemText,
   ListItemIcon,
   ListItemButton,
+  IconButton,
 } from "@mui/material";
 import {
   Home as HomeIcon,
@@ -17,6 +18,7 @@ import {
   AttachMoney,
   Flag,
   BarChart,
+  Edit as EditIcon,
 } from "@mui/icons-material";
 import MainRoutes from "../../Routes/MainRoutes";
 import { useAuthStore } from "../../store";
@@ -52,6 +54,9 @@ const Home: React.FC = () => {
           <Typography variant="h6" component="h3" sx={{ mt: 1 }}>
             {user?.firstName || "User"}
           </Typography>
+          <IconButton component={NavLink} to="/edit-profile" sx={{ ml: 1 }}>
+            <EditIcon />
+          </IconButton>
         </Box>
         <Divider />
         <List component="nav">

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ExpensesByCategory from "../../components/ExpensesByCategory";
 import RecentTransactions from "../../components/RecentTransactions";
 import SummaryChart from "../../components/SummaryChart";
-import { useExpenseStore } from "../../store";
+import { useExpenseStore, useUserProfileStore } from "../../store";
 import InfoCard from "../../components/InfoCard";
 import { useStore } from "zustand";
 import { Grid, Typography, Alert, Container, Box } from "@mui/material";
@@ -10,6 +10,7 @@ import "./dashboard.scss";
 
 const Dashboard: React.FC = () => {
   const { expenses } = useStore(useExpenseStore);
+  const { user } = useStore(useUserProfileStore);
   const [isFirstTimeLogin, setIsFirstTimeLogin] = useState(false);
 
   useEffect(() => {
@@ -31,7 +32,7 @@ const Dashboard: React.FC = () => {
     (total, expense) => total + expense.amount,
     0
   );
-  const income = 5000;
+  const income = user?.income || 0;
   const balance = income - totalExpenses;
   const totalTransactions = expenses.length;
 
