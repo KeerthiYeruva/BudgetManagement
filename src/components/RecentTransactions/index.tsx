@@ -36,7 +36,7 @@ const RecentTransactions: React.FC<RecentTransactionsProps> = ({
               className="list-group-item"
               sx={{ justifyContent: "space-between", alignItems: "center" }}
             >
-              <ListItemText primary={transaction.description} />
+              <ListItemText primary={transaction.description || "--"} />
               <Chip
                 label={`$${transaction.amount.toFixed(2)}`}
                 color="primary"
