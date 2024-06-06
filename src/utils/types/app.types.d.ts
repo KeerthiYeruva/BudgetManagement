@@ -8,11 +8,13 @@ interface Data {
 }
 
 interface User {
+  profilePicture?: string;
   firstName: string;
   lastName: string;
   email: string;
   phoneNumber: string;
   income?: number;
+  incomePeriod?: "weekly" | "monthly" | "yearly";
 }
 
 interface Expense {

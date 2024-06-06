@@ -45,7 +45,9 @@ const Home: React.FC = () => {
         }}
       >
         <Avatar
-          src={"https://picsum.photos/seed/picsum/200/300"}
+          src={
+            user?.profilePicture || "https://picsum.photos/seed/picsum/200/300"
+          }
           alt={`${user?.firstName || "User"}'s avatar`}
           sx={{ width: 80, height: 80, mb: 2 }}
         />

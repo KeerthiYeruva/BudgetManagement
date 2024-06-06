@@ -3,13 +3,8 @@ import { createStore } from "zustand";
 interface AuthState {
   isAuthenticated: boolean;
   token: string | null;
-  user: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
-  } | null;
-  login: (token: string, user: any) => void;
+  user: User | null;
+  login: (token: string, user: User) => void;
   logout: () => void;
 }
 

@@ -25,7 +25,7 @@ export const logout = () => {
 export const mockLogin = async (userData: any) => {
   const { email, password, firstName, lastName, phoneNumber } = userData;
   // Simulate an API call
-  return new Promise<{ token: string; user: any }>((resolve, reject) => {
+  return new Promise<{ token: string; user: User }>((resolve, reject) => {
     setTimeout(() => {
       if (email && password) {
         resolve({
