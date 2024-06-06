@@ -1,37 +1,23 @@
 import React, { useState } from "react";
 import { useStore } from "zustand";
-import { useUserProfileStore } from "../../store";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-  SelectChangeEvent,
-} from "@mui/material";
-import { useThemeContext } from "../../styles/context";
+import { useUserProfileStore, useThemeStore } from "../../store";
+import { Box, Button, TextField, Typography, Grid } from "@mui/material";
+import ToggleColorMode from "../../styles/components/ToggleColorMode";
+import { ToggleCustomTheme } from "../../styles/components/ToggleCustomTheme";
 
 const EditProfile: React.FC = () => {
   const { user, updateUserProfile } = useStore(useUserProfileStore);
+  const { showCustomTheme, toggleCustomTheme, mode, toggleColorMode } =
+    useStore(useThemeStore);
   const [firstName, setFirstName] = useState(user?.firstName || "");
   const [lastName, setLastName] = useState(user?.lastName || "");
   const [email, setEmail] = useState(user?.email || "");
   const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || "");
   const [income, setIncome] = useState(user?.income || 0);
 
-  const { themeName, setThemeName } = useThemeContext();
-  const availableThemes = ["light", "dark", "custom"];
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     updateUserProfile({ firstName, lastName, email, phoneNumber, income });
-  };
-
-  const handleThemeChange = (event: SelectChangeEvent<typeof themeName>) => {
-    setThemeName(event.target.value as typeof themeName);
   };
 
   return (
@@ -75,23 +61,20 @@ const EditProfile: React.FC = () => {
         fullWidth
         margin="normal"
       />
-      <FormControl fullWidth margin="normal">
-        <InputLabel id="theme-select-label">Theme</InputLabel>
-        <Select
-          labelId="theme-select-label"
-          value={themeName}
-          onChange={handleThemeChange}
-        >
-          {availableThemes.map((theme) => (
-            <MenuItem key={theme} value={theme}>
-              {theme.charAt(0).toUpperCase() + theme.slice(1)}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
       <Button type="submit" variant="contained" color="primary">
         Save
       </Button>
+      <Box mt={2}>
+        <ToggleCustomTheme
+          showCustomTheme={showCustomTheme}
+          toggleCustomTheme={toggleCustomTheme}
+        />
+        <Grid mt={2}>
+          <Button>
+            <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
+          </Button>
+        </Grid>
+      </Box>
     </Box>
   );
 };
