@@ -11,6 +11,7 @@ import {
   InputLabel,
   FormControl,
   SelectChangeEvent,
+  InputAdornment,
 } from "@mui/material";
 import { useThemeContext } from "../../styles/context";
 
@@ -21,14 +22,15 @@ const EditProfile: React.FC = () => {
   const [email, setEmail] = useState(user?.email || "");
   const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || "");
   const [income, setIncome] = useState(user?.income || 0);
+  const [incomePeriod, setIncomePeriod] = useState<
+    "weekly" | "monthly" | "yearly"
+  >(user?.incomePeriod || "monthly");
+
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneNumberError, setPhoneNumberError] = useState("");
   const [incomeError, setIncomeError] = useState("");
-  const [incomePeriod, setIncomePeriod] = useState<
-    "weekly" | "monthly" | "yearly"
-  >(user?.incomePeriod || "monthly");
 
   const { themeName, setThemeName } = useThemeContext();
   const availableThemes = ["light", "dark", "custom"];
@@ -88,7 +90,14 @@ const EditProfile: React.FC = () => {
     }
 
     if (isValid) {
-      updateUserProfile({ firstName, lastName, email, phoneNumber, income });
+      updateUserProfile({
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        income,
+        incomePeriod,
+      });
     }
   };
 
@@ -152,19 +161,23 @@ const EditProfile: React.FC = () => {
         margin="normal"
         error={!!incomeError}
         helperText={incomeError}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <Select
+                value={incomePeriod}
+                onChange={handleIncomePeriodChange}
+                displayEmpty
+                inputProps={{ "aria-label": "Income Period" }}
+              >
+                <MenuItem value="weekly">Weekly</MenuItem>
+                <MenuItem value="monthly">Monthly</MenuItem>
+                <MenuItem value="yearly">Yearly</MenuItem>
+              </Select>
+            </InputAdornment>
+          ),
+        }}
       />
-      <FormControl fullWidth margin="normal">
-        <InputLabel id="income-period-select-label">Income Period</InputLabel>
-        <Select
-          labelId="income-period-select-label"
-          value={incomePeriod}
-          onChange={handleIncomePeriodChange}
-        >
-          <MenuItem value="weekly">Weekly</MenuItem>
-          <MenuItem value="monthly">Monthly</MenuItem>
-          <MenuItem value="yearly">Yearly</MenuItem>
-        </Select>
-      </FormControl>
       <FormControl fullWidth margin="normal">
         <InputLabel id="theme-select-label">Theme</InputLabel>
         <Select

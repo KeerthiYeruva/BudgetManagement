@@ -33,7 +33,22 @@ const Dashboard: React.FC = () => {
     0
   );
 
-  const balance = user?.income - totalExpenses;
+  // Calculate balance based on the user's income period
+  const calculateAnnualIncome = (income, period) => {
+    switch (period) {
+      case "weekly":
+        return income * 52;
+      case "monthly":
+        return income * 12;
+      case "yearly":
+        return income;
+      default:
+        return income;
+    }
+  };
+
+  const annualIncome = calculateAnnualIncome(user?.income, user?.incomePeriod);
+  const balance = annualIncome - totalExpenses;
   const totalTransactions = expenses.length;
 
   const groupExpensesByCategory = (expenses) => {
@@ -73,10 +88,13 @@ const Dashboard: React.FC = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <InfoCard title="Income" value={`$${user.income}`} />
+              <InfoCard
+                title={`Income (${user?.incomePeriod || "monthly"})`}
+                value={`$${user.income}`}
+              />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <InfoCard title="Balance" value={`$${balance}`} />
+              <InfoCard title="Balance" value={`$${balance.toFixed(2)}`} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <InfoCard title="Total Transactions" value={totalTransactions} />
