@@ -4,6 +4,7 @@ import { useCategoryStore } from "./CategoryStore";
 import { useExpenseStore } from "./ExpenseStore";
 import { useGoalStore } from "./GoalsStore";
 import { useNotificationStore } from "./NotificationStore";
+import { useUserProfileStore } from "./UserProfileStore";
 export {
   useAuthStore,
   useBudgetStore,
@@ -11,4 +12,5 @@ export {
   useExpenseStore,
   useGoalStore,
   useNotificationStore,
+  useUserProfileStore,
 };

@@ -10,6 +10,7 @@ import {
   ListItemText,
   ListItemIcon,
   ListItemButton,
+  IconButton,
 } from "@mui/material";
 import {
   Home as HomeIcon,
@@ -17,17 +18,19 @@ import {
   AttachMoney,
   Flag,
   BarChart,
+  Edit as EditIcon,
 } from "@mui/icons-material";
 import MainRoutes from "../../Routes/MainRoutes";
 import { useAuthStore } from "../../store";
-import "./home.scss";
 import { useStore } from "zustand";
+
+import "./home.scss";
 
 const Home: React.FC = () => {
   const { user } = useStore(useAuthStore);
 
   return (
-    <Box display="flex" className="vh-100">
+    <Box display="flex" height="100vh">
       <Box
         component="aside"
         sx={{
@@ -35,26 +38,36 @@ const Home: React.FC = () => {
           bgcolor: "background.paper",
           borderRight: 1,
           borderColor: "divider",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          pt: 2,
         }}
       >
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          p={2}
-          bgcolor="grey.100"
+        <Avatar
+          src={
+            user?.profilePicture || "https://picsum.photos/seed/picsum/200/300"
+          }
+          alt={`${user?.firstName || "User"}'s avatar`}
+          sx={{ width: 80, height: 80, mb: 2 }}
+        />
+        <Typography
+          variant="h6"
+          component="h3"
+          sx={{ display: "flex", alignItems: "center" }}
         >
-          <Avatar
-            src={"https://picsum.photos/seed/picsum/200/300"}
-            alt={`${user?.firstName || "User"}'s avatar`}
-            sx={{ width: 56, height: 56 }}
-          />
-          <Typography variant="h6" component="h3" sx={{ mt: 1 }}>
-            {user?.firstName || "User"}
-          </Typography>
-        </Box>
-        <Divider />
-        <List component="nav">
+          {user?.firstName || "User"}
+          <IconButton
+            component={NavLink}
+            to="/edit-profile"
+            sx={{ ml: 1, p: 0 }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Typography>
+
+        <Divider sx={{ width: "100%", mt: 2 }} />
+        <List component="nav" sx={{ width: "100%", mt: 2 }}>
           <ListItem disablePadding>
             <ListItemButton component={NavLink} to="/" end>
               <ListItemIcon>
