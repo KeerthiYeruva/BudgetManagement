@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { useStore } from "zustand";
 import { useExpenseStore, useGoalStore } from "../../../store";
+import * as XLSX from "xlsx";
 
 const ReportGenerator = () => {
   const [criteria, setCriteria] = useState<string>("category");
@@ -23,7 +24,15 @@ const ReportGenerator = () => {
       return;
     }
 
-    // Generate report logic...
+    // Create a new workbook and add a worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(expenses);
+
+    // Append the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Expenses");
+
+    // Generate Excel file and trigger download
+    XLSX.writeFile(workbook, "Expenses_Report.xlsx");
 
     setSnackbarOpen(true); // Show snackbar after report generation
   };
@@ -34,7 +43,15 @@ const ReportGenerator = () => {
       return;
     }
 
-    // Generate report logic...
+    // Create a new workbook and add a worksheet
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(goals);
+
+    // Append the worksheet to the workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Goals");
+
+    // Generate Excel file and trigger download
+    XLSX.writeFile(workbook, "Goals_Report.xlsx");
 
     setSnackbarOpen(true); // Show snackbar after report generation
   };
