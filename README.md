@@ -12,10 +12,6 @@ This application helps users manage their budgets, expenses, and financial goals
   - [Using npm](#using-npm)
   - [Using Yarn](#using-yarn)
 - [Usage](#usage)
-- [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact Information](#contact-information)
 
 ## Installation
 
