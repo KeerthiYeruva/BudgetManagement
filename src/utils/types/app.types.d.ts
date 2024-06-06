@@ -8,6 +8,7 @@ interface Data {
 }
 
 interface User {
+  profilePicture?: string;
   firstName: string;
   lastName: string;
   email: string;

@@ -12,8 +12,11 @@ import {
   FormControl,
   SelectChangeEvent,
   InputAdornment,
+  Avatar,
+  IconButton,
 } from "@mui/material";
 import { useThemeContext } from "../../styles/context";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
 
 const EditProfile: React.FC = () => {
   const { user, updateUserProfile } = useStore(useUserProfileStore);
@@ -25,6 +28,10 @@ const EditProfile: React.FC = () => {
   const [incomePeriod, setIncomePeriod] = useState<
     "weekly" | "monthly" | "yearly"
   >(user?.incomePeriod || "monthly");
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [profilePicturePreview, setProfilePicturePreview] = useState<
+    string | null
+  >(user?.profilePicture || null);
 
   const [firstNameError, setFirstNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
@@ -43,6 +50,22 @@ const EditProfile: React.FC = () => {
   const validatePhoneNumber = (phoneNumber: string) => {
     const phoneRegex = /^[0-9]{10,15}$/;
     return phoneRegex.test(phoneNumber);
+  };
+
+  const handleProfilePictureChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      setProfilePicture(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          setProfilePicturePreview(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -90,14 +113,33 @@ const EditProfile: React.FC = () => {
     }
 
     if (isValid) {
-      updateUserProfile({
-        firstName,
-        lastName,
-        email,
-        phoneNumber,
-        income,
-        incomePeriod,
-      });
+      // Convert the profile picture to a base64 string for simplicity
+      if (profilePicture) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === "string") {
+            updateUserProfile({
+              firstName,
+              lastName,
+              email,
+              phoneNumber,
+              income,
+              incomePeriod,
+              profilePicture: reader.result,
+            });
+          }
+        };
+        reader.readAsDataURL(profilePicture);
+      } else {
+        updateUserProfile({
+          firstName,
+          lastName,
+          email,
+          phoneNumber,
+          income,
+          incomePeriod,
+        });
+      }
     }
   };
 
@@ -112,10 +154,40 @@ const EditProfile: React.FC = () => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} p={3}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      p={3}
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+    >
       <Typography variant="h4" gutterBottom>
         Edit Profile
       </Typography>
+      <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
+        <Avatar
+          src={profilePicturePreview || ""}
+          alt="Profile Picture"
+          sx={{ width: 120, height: 120 }}
+        />
+        <input
+          accept="image/*"
+          style={{ display: "none" }}
+          id="profile-picture-upload"
+          type="file"
+          onChange={handleProfilePictureChange}
+        />
+        <label htmlFor="profile-picture-upload">
+          <IconButton
+            color="primary"
+            aria-label="upload picture"
+            component="span"
+          >
+            <PhotoCamera />
+          </IconButton>
+        </label>
+      </Box>
       <TextField
         label="First Name"
         value={firstName}
@@ -169,6 +241,7 @@ const EditProfile: React.FC = () => {
                 onChange={handleIncomePeriodChange}
                 displayEmpty
                 inputProps={{ "aria-label": "Income Period" }}
+                sx={{ marginLeft: 1 }}
               >
                 <MenuItem value="weekly">Weekly</MenuItem>
                 <MenuItem value="monthly">Monthly</MenuItem>
@@ -192,7 +265,12 @@ const EditProfile: React.FC = () => {
           ))}
         </Select>
       </FormControl>
-      <Button type="submit" variant="contained" color="primary">
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        sx={{ marginTop: 2 }}
+      >
         Save
       </Button>
     </Box>
