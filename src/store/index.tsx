@@ -5,6 +5,7 @@ import { useExpenseStore } from "./ExpenseStore";
 import { useGoalStore } from "./GoalsStore";
 import { useNotificationStore } from "./NotificationStore";
 import { useUserProfileStore } from "./UserProfileStore";
+import { useThemeStore } from "./useThemeStore";
 export {
   useAuthStore,
   useBudgetStore,
@@ -13,4 +14,5 @@ export {
   useGoalStore,
   useNotificationStore,
   useUserProfileStore,
+  useThemeStore,
 };

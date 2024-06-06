@@ -7,12 +7,16 @@ import Login from "./components/Login";
 import NotificationComponent from "./components/NotificationComponent";
 import Home from "./Pages/Home";
 import PrivateRoute from "./Routes/PrivateRoute";
-import { ThemeContextProvider } from "./styles/context";
+import { useThemeStore } from "./store";
+import { ThemeProvider } from "@mui/material/styles";
+import { useStore } from "zustand";
 import "./App.scss";
 
 function App() {
+  const { currentTheme } = useStore(useThemeStore);
+
   return (
-    <ThemeContextProvider>
+    <ThemeProvider theme={currentTheme}>
       <Container maxWidth="xl">
         <CssBaseline />
         <Box className="App" textAlign="center">
@@ -23,7 +27,7 @@ function App() {
           </Routes>
         </Box>
       </Container>
-    </ThemeContextProvider>
+    </ThemeProvider>
   );
 }
 

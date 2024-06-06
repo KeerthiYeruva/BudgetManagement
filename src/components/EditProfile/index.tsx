@@ -1,47 +1,50 @@
 import React, { useState } from "react";
 import { useStore } from "zustand";
-import { useUserProfileStore } from "../../store";
+import { useUserProfileStore, useThemeStore } from "../../store";
 import {
   Box,
   Button,
   TextField,
   Typography,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
+  Grid,
   SelectChangeEvent,
-  InputAdornment,
   Avatar,
   IconButton,
-  Grid,
+  InputAdornment,
+  MenuItem,
+  Select,
+  Paper,
 } from "@mui/material";
-import { useThemeContext } from "../../styles/context";
-import PhotoCamera from "@mui/icons-material/PhotoCamera";
+import ToggleColorMode from "../../styles/components/ToggleColorMode";
+import { ToggleCustomTheme } from "../../styles/components/ToggleCustomTheme";
+import { PhotoCamera } from "@mui/icons-material";
 
 const EditProfile: React.FC = () => {
   const { user, updateUserProfile } = useStore(useUserProfileStore);
-  const [firstName, setFirstName] = useState(user?.firstName || "");
-  const [lastName, setLastName] = useState(user?.lastName || "");
-  const [email, setEmail] = useState(user?.email || "");
-  const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber || "");
-  const [income, setIncome] = useState(user?.income || 0);
-  const [incomePeriod, setIncomePeriod] = useState<
-    "weekly" | "monthly" | "yearly"
-  >(user?.incomePeriod || "monthly");
-  const [profilePicture, setProfilePicture] = useState<File | null>(null);
-  const [profilePicturePreview, setProfilePicturePreview] = useState<
-    string | null
-  >(user?.profilePicture || null);
+  const { showCustomTheme, toggleCustomTheme, mode, toggleColorMode } =
+    useStore(useThemeStore);
 
-  const [firstNameError, setFirstNameError] = useState("");
-  const [lastNameError, setLastNameError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [phoneNumberError, setPhoneNumberError] = useState("");
-  const [incomeError, setIncomeError] = useState("");
+  const [formData, setFormData] = useState({
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    email: user?.email || "",
+    phoneNumber: user?.phoneNumber || "",
+    income: user?.income || 0,
+    incomePeriod: user?.incomePeriod || "monthly",
+    profilePicture: user?.profilePicture || "",
+  });
 
-  const { themeName, setThemeName } = useThemeContext();
-  const availableThemes = ["light", "dark", "custom"];
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    income: "",
+  });
+
+  const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
+    null
+  );
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -58,100 +61,95 @@ const EditProfile: React.FC = () => {
   ) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      setProfilePicture(file);
+      setProfilePictureFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         if (typeof reader.result === "string") {
-          setProfilePicturePreview(reader.result);
+          setFormData((prev) => ({
+            ...prev,
+            profilePicture: reader.result as string,
+          }));
         }
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Clear previous error messages
-    setFirstNameError("");
-    setLastNameError("");
-    setEmailError("");
-    setPhoneNumberError("");
-    setIncomeError("");
-
-    // Validate inputs
-    let isValid = true;
-
-    if (!firstName) {
-      setFirstNameError("First Name is required");
-      isValid = false;
-    }
-
-    if (!lastName) {
-      setLastNameError("Last Name is required");
-      isValid = false;
-    }
-
-    if (!email) {
-      setEmailError("Email is required");
-      isValid = false;
-    } else if (!validateEmail(email)) {
-      setEmailError("Invalid email format");
-      isValid = false;
-    }
-
-    if (!phoneNumber) {
-      setPhoneNumberError("Phone Number is required");
-      isValid = false;
-    } else if (!validatePhoneNumber(phoneNumber)) {
-      setPhoneNumberError("Invalid phone number format");
-      isValid = false;
-    }
-
-    if (income <= 0) {
-      setIncomeError("Income must be a positive number");
-      isValid = false;
-    }
-
-    if (isValid) {
-      // Convert the profile picture to a base64 string for simplicity
-      if (profilePicture) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          if (typeof reader.result === "string") {
-            updateUserProfile({
-              firstName,
-              lastName,
-              email,
-              phoneNumber,
-              income,
-              incomePeriod,
-              profilePicture: reader.result,
-            });
-          }
-        };
-        reader.readAsDataURL(profilePicture);
-      } else {
-        updateUserProfile({
-          firstName,
-          lastName,
-          email,
-          phoneNumber,
-          income,
-          incomePeriod,
-        });
-      }
-    }
-  };
-
-  const handleThemeChange = (event: SelectChangeEvent<typeof themeName>) => {
-    setThemeName(event.target.value as typeof themeName);
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleIncomePeriodChange = (
     event: SelectChangeEvent<"weekly" | "monthly" | "yearly">
   ) => {
-    setIncomePeriod(event.target.value as "weekly" | "monthly" | "yearly");
+    setFormData((prev) => ({
+      ...prev,
+      incomePeriod: event.target.value as "weekly" | "monthly" | "yearly",
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const newErrors = {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phoneNumber: "",
+      income: "",
+    };
+
+    let isValid = true;
+
+    if (!formData.firstName) {
+      newErrors.firstName = "First Name is required";
+      isValid = false;
+    }
+
+    if (!formData.lastName) {
+      newErrors.lastName = "Last Name is required";
+      isValid = false;
+    }
+
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = "Invalid email format";
+      isValid = false;
+    }
+
+    if (!formData.phoneNumber) {
+      newErrors.phoneNumber = "Phone Number is required";
+      isValid = false;
+    } else if (!validatePhoneNumber(formData.phoneNumber)) {
+      newErrors.phoneNumber = "Invalid phone number format";
+      isValid = false;
+    }
+
+    if (formData.income <= 0) {
+      newErrors.income = "Income must be a positive number";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+
+    if (isValid) {
+      if (profilePictureFile) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === "string") {
+            updateUserProfile({ ...formData, profilePicture: reader.result });
+          }
+        };
+        reader.readAsDataURL(profilePictureFile);
+      } else {
+        updateUserProfile(formData);
+      }
+    }
   };
 
   return (
@@ -163,12 +161,29 @@ const EditProfile: React.FC = () => {
       flexDirection="column"
       alignItems="center"
     >
+      <Paper
+        elevation={3}
+        sx={{
+          padding: 3,
+          marginBottom: 3,
+          width: "100%",
+          maxWidth: 600,
+        }}
+      >
+        <Box display="flex" justifyContent="space-between" alignItems="center">
+          <ToggleCustomTheme
+            showCustomTheme={showCustomTheme}
+            toggleCustomTheme={toggleCustomTheme}
+          />
+          <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
+        </Box>
+      </Paper>
       <Typography variant="h4" gutterBottom>
         Edit Profile
       </Typography>
       <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
         <Avatar
-          src={profilePicturePreview || ""}
+          src={formData.profilePicture || ""}
           alt="Profile Picture"
           sx={{ width: 120, height: 120 }}
         />
@@ -193,62 +208,67 @@ const EditProfile: React.FC = () => {
         <Grid item xs={12} sm={6}>
           <TextField
             label="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleInputChange}
             fullWidth
             margin="normal"
-            error={!!firstNameError}
-            helperText={firstNameError}
+            error={!!errors.firstName}
+            helperText={errors.firstName}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
             label="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleInputChange}
             fullWidth
             margin="normal"
-            error={!!lastNameError}
-            helperText={lastNameError}
+            error={!!errors.lastName}
+            helperText={errors.lastName}
           />
         </Grid>
         <Grid item xs={12}>
           <TextField
             label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
             fullWidth
             margin="normal"
-            error={!!emailError}
-            helperText={emailError}
+            error={!!errors.email}
+            helperText={errors.email}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
             label="Phone Number"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleInputChange}
             fullWidth
             margin="normal"
-            error={!!phoneNumberError}
-            helperText={phoneNumberError}
+            error={!!errors.phoneNumber}
+            helperText={errors.phoneNumber}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
           <TextField
             label="Income"
             type="number"
-            value={income}
-            onChange={(e) => setIncome(Number(e.target.value))}
+            name="income"
+            value={formData.income}
+            onChange={handleInputChange}
             fullWidth
             margin="normal"
-            error={!!incomeError}
-            helperText={incomeError}
+            error={!!errors.income}
+            helperText={errors.income}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
                   <Select
-                    value={incomePeriod}
+                    value={formData.incomePeriod}
                     onChange={handleIncomePeriodChange}
                     displayEmpty
                     inputProps={{ "aria-label": "Income Period" }}
@@ -265,20 +285,6 @@ const EditProfile: React.FC = () => {
           />
         </Grid>
       </Grid>
-      <FormControl fullWidth margin="normal">
-        <InputLabel id="theme-select-label">Theme</InputLabel>
-        <Select
-          labelId="theme-select-label"
-          value={themeName}
-          onChange={handleThemeChange}
-        >
-          {availableThemes.map((theme) => (
-            <MenuItem key={theme} value={theme}>
-              {theme.charAt(0).toUpperCase() + theme.slice(1)}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
       <Button
         type="submit"
         variant="contained"
