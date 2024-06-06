@@ -14,6 +14,7 @@ import {
   InputAdornment,
   Avatar,
   IconButton,
+  Grid,
 } from "@mui/material";
 import { useThemeContext } from "../../styles/context";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
@@ -188,69 +189,82 @@ const EditProfile: React.FC = () => {
           </IconButton>
         </label>
       </Box>
-      <TextField
-        label="First Name"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-        fullWidth
-        margin="normal"
-        error={!!firstNameError}
-        helperText={firstNameError}
-      />
-      <TextField
-        label="Last Name"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-        fullWidth
-        margin="normal"
-        error={!!lastNameError}
-        helperText={lastNameError}
-      />
-      <TextField
-        label="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        fullWidth
-        margin="normal"
-        error={!!emailError}
-        helperText={emailError}
-      />
-      <TextField
-        label="Phone Number"
-        value={phoneNumber}
-        onChange={(e) => setPhoneNumber(e.target.value)}
-        fullWidth
-        margin="normal"
-        error={!!phoneNumberError}
-        helperText={phoneNumberError}
-      />
-      <TextField
-        label="Income"
-        type="number"
-        value={income}
-        onChange={(e) => setIncome(Number(e.target.value))}
-        fullWidth
-        margin="normal"
-        error={!!incomeError}
-        helperText={incomeError}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <Select
-                value={incomePeriod}
-                onChange={handleIncomePeriodChange}
-                displayEmpty
-                inputProps={{ "aria-label": "Income Period" }}
-                sx={{ marginLeft: 1 }}
-              >
-                <MenuItem value="weekly">Weekly</MenuItem>
-                <MenuItem value="monthly">Monthly</MenuItem>
-                <MenuItem value="yearly">Yearly</MenuItem>
-              </Select>
-            </InputAdornment>
-          ),
-        }}
-      />
+      <Grid container spacing={2}>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            fullWidth
+            margin="normal"
+            error={!!firstNameError}
+            helperText={firstNameError}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            fullWidth
+            margin="normal"
+            error={!!lastNameError}
+            helperText={lastNameError}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            label="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            fullWidth
+            margin="normal"
+            error={!!emailError}
+            helperText={emailError}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Phone Number"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            fullWidth
+            margin="normal"
+            error={!!phoneNumberError}
+            helperText={phoneNumberError}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Income"
+            type="number"
+            value={income}
+            onChange={(e) => setIncome(Number(e.target.value))}
+            fullWidth
+            margin="normal"
+            error={!!incomeError}
+            helperText={incomeError}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <Select
+                    value={incomePeriod}
+                    onChange={handleIncomePeriodChange}
+                    displayEmpty
+                    inputProps={{ "aria-label": "Income Period" }}
+                    sx={{ marginLeft: 1 }}
+                    size="small"
+                  >
+                    <MenuItem value="weekly">Weekly</MenuItem>
+                    <MenuItem value="monthly">Monthly</MenuItem>
+                    <MenuItem value="yearly">Yearly</MenuItem>
+                  </Select>
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+      </Grid>
       <FormControl fullWidth margin="normal">
         <InputLabel id="theme-select-label">Theme</InputLabel>
         <Select
