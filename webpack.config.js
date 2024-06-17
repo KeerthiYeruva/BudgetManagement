@@ -11,7 +11,7 @@ const stylesHandler = isProduction
 const config = {
   entry: "./src/index.tsx",
   output: {
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "build"),
     publicPath: "/",
     filename: isProduction ? "[name].[contenthash].js" : "[name].js",
     chunkFilename: isProduction ? "[name].[contenthash].js" : "[name].js",
