@@ -8,7 +8,7 @@ This application helps users manage their budgets, expenses, and financial goals
 
 ## Live Preview
 
-You can view a live preview of the project [here](https://budget-management-4m2m55kh2-keerthiyeruvas-projects.vercel.app/).
+You can view a live preview of the project [here](https://budget-management-mu.vercel.app/login).
 
 ## Table of Contents
 
