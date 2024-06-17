@@ -1,4 +1,4 @@
-import create from "zustand";
+import { createStore } from "zustand";
 import { createTheme } from "@mui/material/styles";
 import { PaletteMode, Theme } from "@mui/material";
 import getLPTheme from "../styles/themes/Theme";
@@ -17,7 +17,7 @@ const getDefaultTheme = (mode: PaletteMode, showCustomTheme: boolean) => {
     : createTheme({ palette: { mode } });
 };
 
-export const useThemeStore = create<ThemeState>((set) => ({
+export const useThemeStore = createStore<ThemeState>((set) => ({
   showCustomTheme: true,
   mode: "light",
   currentTheme: getDefaultTheme("light", true),
