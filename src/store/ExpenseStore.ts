@@ -66,13 +66,15 @@ export const useExpenseStore = createStore<ExpenseStore>((set) => ({
       const goalStore = useGoalStore.getState();
       const updatedGoals = goalStore.goals.map((goal) => {
         if (expenseToDelete.category === `savings_${goal.name}`) {
-          const updatedSavings = goal.savings.filter(
-            (saving) =>
-              !(
-                saving.date === expenseToDelete.date &&
-                saving.amount === expenseToDelete.amount
+          const updatedSavings = goal.savings
+            ? goal.savings.filter(
+                (saving) =>
+                  !(
+                    saving.date === expenseToDelete.date &&
+                    saving.amount === expenseToDelete.amount
+                  )
               )
-          );
+            : [];
           return { ...goal, savings: updatedSavings };
         }
         return goal;

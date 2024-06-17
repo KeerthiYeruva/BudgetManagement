@@ -90,7 +90,7 @@ const Dashboard: React.FC = () => {
             <Grid item xs={12} sm={6} md={3}>
               <InfoCard
                 title={`Income (${user?.incomePeriod || "monthly"})`}
-                value={`$${user.income}`}
+                value={`$${user?.income}`}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>

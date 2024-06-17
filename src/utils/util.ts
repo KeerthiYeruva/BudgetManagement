@@ -37,16 +37,18 @@ export const updateGoals = (currentGoals: Goal[], newGoal: Goal): Goal[] => {
     return currentGoals.map((goal) => {
       if (goal.id === newGoal.id) {
         const uniqueSavings = [...(goal.savings || [])];
-        newGoal.savings.forEach((newSaving) => {
-          const existingSavingIndex = uniqueSavings.findIndex(
-            (s) => s.date === newSaving.date
-          );
-          if (existingSavingIndex !== -1) {
-            uniqueSavings[existingSavingIndex] = newSaving;
-          } else {
-            uniqueSavings.push(newSaving);
-          }
-        });
+        if (newGoal.savings) {
+          newGoal.savings.forEach((newSaving) => {
+            const existingSavingIndex = uniqueSavings.findIndex(
+              (s) => s.date === newSaving.date
+            );
+            if (existingSavingIndex !== -1) {
+              uniqueSavings[existingSavingIndex] = newSaving;
+            } else {
+              uniqueSavings.push(newSaving);
+            }
+          });
+        }
         return { ...goal, ...newGoal, savings: uniqueSavings };
       }
       return goal;
@@ -101,7 +103,6 @@ export const updateExpensesAndCategories = (goals: Goal[]) => {
 };
 
 // Utility function to update local storage
-
 export const updateLocalStorage = (key: string, value: any) => {
   const currentState = JSON.parse(localStorage.getItem("appState") || "{}");
   const newState = { ...currentState, [key]: value };

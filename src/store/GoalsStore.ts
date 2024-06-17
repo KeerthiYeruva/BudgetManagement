@@ -34,7 +34,6 @@ export const useGoalStore = createStore<GoalStore>((set) => ({
       const updatedGoals = updateGoalsUtil(state.goals, goal);
       updateExpensesAndCategories(updatedGoals);
       updateLocalStorage("goals", updatedGoals);
-      // notifySuccess("Goal added successfully");
       return { goals: updatedGoals };
     });
   },
@@ -43,15 +42,17 @@ export const useGoalStore = createStore<GoalStore>((set) => ({
       const updatedGoals = state.goals.map((g) =>
         g.id === goal.id ? goal : g
       );
+      updateExpensesAndCategories(updatedGoals);
       updateLocalStorage("goals", updatedGoals);
-      // notifySuccess("Goal updated successfully");
+
       return { goals: updatedGoals };
     });
   },
   updateGoals: (goals) => {
     set(() => {
+      updateExpensesAndCategories(goals);
       updateLocalStorage("goals", goals);
-      // notifySuccess("Goals updated successfully");
+
       return { goals };
     });
   },
