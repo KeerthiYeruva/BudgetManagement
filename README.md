@@ -6,6 +6,10 @@ A budget management application built with React, TypeScript, and Material UI.
 
 This application helps users manage their budgets, expenses, and financial goals. It provides features to set budgets, add and manage expenses, track expenses by category, and generate reports. The application is styled using Material UI.
 
+## Live Preview
+
+You can view a live preview of the RECIPES project [here](https://budget-management-4m2m55kh2-keerthiyeruvas-projects.vercel.app/).
+
 ## Table of Contents
 
 - [Installation](#installation)
