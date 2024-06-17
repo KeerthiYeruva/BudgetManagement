@@ -77,10 +77,8 @@ const Signup: React.FC = () => {
       const { token, user } = await mockLogin(formValues);
       login(token, user);
       navigate("/");
-      console.log("Signup success");
     } catch (error) {
       setSubmissionError("Signup failed. Please try again.");
-      console.error("Signup failed", error);
     } finally {
       setIsLoading(false);
     }
@@ -108,15 +106,10 @@ const Signup: React.FC = () => {
           </Alert>
         )}
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-          <Grid container spacing={2}>
+          <Grid container spacing={3}>
             {["firstName", "lastName", "phoneNumber", "email", "password"].map(
               (field, index) => (
-                <Grid
-                  item
-                  xs={12}
-                  sm={field === "firstName" || field === "lastName" ? 6 : 12}
-                  key={index}
-                >
+                <Grid item xs={12} sm={12} key={index}>
                   <TextField
                     required
                     fullWidth
