@@ -1,7 +1,7 @@
 import { createStore } from "zustand";
 import {
   isValidGoal,
-  updateLocalStorage,
+  updateSessionStorage,
   notifySuccess,
   handleInvalidGoal,
   updateGoals as updateGoalsUtil,
@@ -16,15 +16,15 @@ interface GoalStore {
   deleteGoal: (id: number) => void;
 }
 
-const getInitialData = () => {
-  const storedState = localStorage.getItem("appState");
+const getInitialData = (): Goal[] => {
+  const storedState = sessionStorage.getItem("appState");
   const appState = storedState ? JSON.parse(storedState) : {};
   return appState.goals || [];
 };
 
 export const useGoalStore = createStore<GoalStore>((set) => ({
   goals: getInitialData(),
-  addGoal: (goal) => {
+  addGoal: (goal: Goal) => {
     if (!isValidGoal(goal)) {
       handleInvalidGoal();
       return;
@@ -33,33 +33,33 @@ export const useGoalStore = createStore<GoalStore>((set) => ({
     set((state) => {
       const updatedGoals = updateGoalsUtil(state.goals, goal);
       updateExpensesAndCategories(updatedGoals);
-      updateLocalStorage("goals", updatedGoals);
+      updateSessionStorage("goals", updatedGoals);
+      notifySuccess("Goal added successfully");
       return { goals: updatedGoals };
     });
   },
-  updateGoal: (goal) => {
+  updateGoal: (goal: Goal) => {
     set((state) => {
       const updatedGoals = state.goals.map((g) =>
         g.id === goal.id ? goal : g
       );
       updateExpensesAndCategories(updatedGoals);
-      updateLocalStorage("goals", updatedGoals);
-
+      updateSessionStorage("goals", updatedGoals);
+      notifySuccess("Goal updated successfully");
       return { goals: updatedGoals };
     });
   },
-  updateGoals: (goals) => {
+  updateGoals: (goals: Goal[]) => {
     set(() => {
       updateExpensesAndCategories(goals);
-      updateLocalStorage("goals", goals);
-
+      updateSessionStorage("goals", goals);
       return { goals };
     });
   },
-  deleteGoal: (id) => {
+  deleteGoal: (id: number) => {
     set((state) => {
       const updatedGoals = state.goals.filter((goal) => goal.id !== id);
-      updateLocalStorage("goals", updatedGoals);
+      updateSessionStorage("goals", updatedGoals);
       notifySuccess("Goal deleted successfully");
       return { goals: updatedGoals };
     });

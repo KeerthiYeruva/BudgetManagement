@@ -3,7 +3,7 @@ import {
   isValidExpense,
   handleInvalidExpense,
   sortExpenses,
-  updateLocalStorage,
+  updateSessionStorage,
   notifySuccess,
 } from "../utils/util";
 import { useGoalStore } from "./GoalsStore";
@@ -16,15 +16,15 @@ interface ExpenseStore {
   deleteExpense: (id: number) => void;
 }
 
-const getInitialData = () => {
-  const storedState = localStorage.getItem("appState");
+const getInitialData = (): Expense[] => {
+  const storedState = sessionStorage.getItem("appState");
   const appState = storedState ? JSON.parse(storedState) : {};
   return appState.expenses || [];
 };
 
 export const useExpenseStore = createStore<ExpenseStore>((set) => ({
   expenses: getInitialData(),
-  addExpense: (expense) => {
+  addExpense: (expense: Expense) => {
     if (!isValidExpense(expense)) {
       handleInvalidExpense();
       return;
@@ -33,25 +33,28 @@ export const useExpenseStore = createStore<ExpenseStore>((set) => ({
     set((state) => {
       const updatedExpenses = [...state.expenses, expense];
       const sortedExpenses = sortExpenses(updatedExpenses);
-      updateLocalStorage("expenses", sortedExpenses);
+      updateSessionStorage("expenses", sortedExpenses);
 
       // Notify success
-      // notifySuccess("Expense added successfully");
+      notifySuccess("Expense added successfully");
 
       return { expenses: sortedExpenses };
     });
   },
-  updateExpense: (expense) => {
+  updateExpense: (expense: Expense) => {
     set((state) => {
       const updatedExpenses = state.expenses.map((exp) =>
         exp.id === expense.id ? expense : exp
       );
-      updateLocalStorage("expenses", updatedExpenses);
-      // notifySuccess("Expense updated successfully");
+      updateSessionStorage("expenses", updatedExpenses);
+
+      // Notify success
+      notifySuccess("Expense updated successfully");
+
       return { expenses: updatedExpenses };
     });
   },
-  deleteExpense: (id) => {
+  deleteExpense: (id: number) => {
     set((state) => {
       const expenseToDelete = state.expenses.find(
         (expense) => expense.id === id
@@ -83,7 +86,7 @@ export const useExpenseStore = createStore<ExpenseStore>((set) => ({
       // Save the updated goals back to the GoalStore
       useGoalStore.getState().updateGoals(updatedGoals);
 
-      updateLocalStorage("expenses", updatedExpenses);
+      updateSessionStorage("expenses", updatedExpenses);
 
       // Notify success
       notifySuccess("Expense deleted successfully");

@@ -8,6 +8,7 @@ interface Data {
 }
 
 interface User {
+  id?: string;
   profilePicture?: string;
   firstName: string;
   lastName: string;
@@ -19,7 +20,7 @@ interface User {
 
 interface Expense {
   id: number;
-  date: string; //need to change to Date
+  date: Date; // Changed to Date
   category: string;
   amount: number;
   description: string;
@@ -42,8 +43,9 @@ interface Budgets {
 
 interface Saving {
   amount: number;
-  date: string; // need to change to Date
+  date: Date; // Changed to Date
 }
+
 interface Goal {
   id: number;
   name: string;

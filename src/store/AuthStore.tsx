@@ -8,20 +8,34 @@ interface AuthState {
   logout: () => void;
 }
 
+const getUserFromSessionStorage = (): User | null => {
+  const user = sessionStorage.getItem("user");
+  if (!user) return null;
+  try {
+    return JSON.parse(user);
+  } catch (error) {
+    console.error("Error parsing user from sessionStorage", error);
+    sessionStorage.removeItem("user");
+    return null;
+  }
+};
+
+const getTokenFromSessionStorage = (): string | null => {
+  return sessionStorage.getItem("userToken");
+};
+
 export const useAuthStore = createStore<AuthState>((set) => ({
-  isAuthenticated: !!localStorage.getItem("userToken"),
-  token: localStorage.getItem("userToken"),
-  user: localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user")!)
-    : null,
-  login: (token: string, user: any) => {
-    localStorage.setItem("userToken", token);
-    localStorage.setItem("user", JSON.stringify(user));
+  isAuthenticated: !!getTokenFromSessionStorage(),
+  token: getTokenFromSessionStorage(),
+  user: getUserFromSessionStorage(),
+  login: (token: string, user: User) => {
+    sessionStorage.setItem("userToken", token);
+    sessionStorage.setItem("user", JSON.stringify(user));
     set({ isAuthenticated: true, token, user });
   },
   logout: () => {
-    localStorage.removeItem("userToken");
-    localStorage.removeItem("user");
+    sessionStorage.removeItem("userToken");
+    sessionStorage.removeItem("user");
     set({ isAuthenticated: false, token: null, user: null });
   },
 }));
