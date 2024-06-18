@@ -1,3 +1,4 @@
+import { CircularProgress } from "@mui/material";
 import React, { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
@@ -31,8 +32,20 @@ const ManageBudgets = lazy(
 const EditProfile = lazy(() => import("../../components/EditProfile"));
 
 const MainRoutes: React.FC = () => {
+  const Loading = () => (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <CircularProgress />
+    </div>
+  );
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Loading />}>
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/expenses" element={<Expenses />}>
