@@ -10,7 +10,7 @@ export const isValidExpense = (expense: Expense): boolean => {
   return expense.amount > 0;
 };
 
-export const handleInvalidExpense = () => {
+export const handleInvalidExpense = (): void => {
   notifyError("Invalid expense data");
 };
 
@@ -20,12 +20,11 @@ export const sortExpenses = (expenses: Expense[]): Expense[] => {
   );
 };
 
-// Utility functions
 export const isValidGoal = (goal: Goal): boolean => {
   return goal.name.trim() !== "" && goal.budget > 0;
 };
 
-export const handleInvalidGoal = () => {
+export const handleInvalidGoal = (): void => {
   notifyError("Invalid goal data");
 };
 
@@ -58,7 +57,7 @@ export const updateGoals = (currentGoals: Goal[], newGoal: Goal): Goal[] => {
   }
 };
 
-export const updateExpensesAndCategories = (goals: Goal[]) => {
+export const updateExpensesAndCategories = (goals: Goal[]): void => {
   const expenseStore = useExpenseStore.getState();
   const categoryStore = useCategoryStore.getState();
 
@@ -102,24 +101,24 @@ export const updateExpensesAndCategories = (goals: Goal[]) => {
   });
 };
 
-// Utility function to update local storage
-export const updateLocalStorage = (key: string, value: any) => {
-  const currentState = JSON.parse(localStorage.getItem("appState") || "{}");
+// Utility function to update session storage
+export const updateSessionStorage = (key: string, value: any): void => {
+  const currentState = JSON.parse(sessionStorage.getItem("appState") || "{}");
   const newState = { ...currentState, [key]: value };
-  localStorage.setItem("appState", JSON.stringify(newState));
+  sessionStorage.setItem("appState", JSON.stringify(newState));
 };
 
-export const getLocalStorage = (key: string) => {
-  const currentState = JSON.parse(localStorage.getItem("appState") || "{}");
+export const getSessionStorage = (key: string): any => {
+  const currentState = JSON.parse(sessionStorage.getItem("appState") || "{}");
   return currentState[key];
 };
 
 // Utility function to notify success
-export const notifySuccess = (message: string) => {
+export const notifySuccess = (message: string): void => {
   useNotificationStore.getState().addNotification(message, "success");
 };
 
 // Utility function to notify error
-export const notifyError = (message: string) => {
+export const notifyError = (message: string): void => {
   useNotificationStore.getState().addNotification(message, "error");
 };

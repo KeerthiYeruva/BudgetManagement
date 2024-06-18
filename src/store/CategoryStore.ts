@@ -1,5 +1,6 @@
 import { createStore } from "zustand";
 import { useExpenseStore } from "./ExpenseStore";
+import { notifyError } from "../utils/util";
 
 interface CategoryStore {
   categories: Category[];
@@ -8,15 +9,15 @@ interface CategoryStore {
   getCategoryExpenses: (category: string) => number;
 }
 
-const getInitialData = () => {
-  const storedState = localStorage.getItem("appState");
+const getInitialData = (): Category[] => {
+  const storedState = sessionStorage.getItem("appState");
   const appState = storedState ? JSON.parse(storedState) : {};
   return appState.categories || [];
 };
 
 export const useCategoryStore = createStore<CategoryStore>((set) => ({
   categories: getInitialData(),
-  addCategory: (category) => {
+  addCategory: (category: Category) => {
     set((state) => {
       const newCategoryName = category.name.toLowerCase();
       const categoryExists = state.categories.some(
@@ -25,27 +26,28 @@ export const useCategoryStore = createStore<CategoryStore>((set) => ({
 
       if (!categoryExists) {
         const updatedCategories = [...state.categories, category];
-        localStorage.setItem(
+        sessionStorage.setItem(
           "appState",
           JSON.stringify({ ...state, categories: updatedCategories })
         );
         return { categories: updatedCategories };
       } else {
+        notifyError("Category already exists");
         return state;
       }
     });
   },
-  deleteCategory: (id) => {
+  deleteCategory: (id: number) => {
     set((state) => {
       const updatedCategories = state.categories.filter((cat) => cat.id !== id);
-      localStorage.setItem(
+      sessionStorage.setItem(
         "appState",
         JSON.stringify({ ...state, categories: updatedCategories })
       );
       return { categories: updatedCategories };
     });
   },
-  getCategoryExpenses: (category) => {
+  getCategoryExpenses: (category: string) => {
     return useExpenseStore
       .getState()
       .expenses.filter((expense) => expense.category === category)

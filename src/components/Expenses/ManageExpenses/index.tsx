@@ -14,6 +14,7 @@ import {
 import { Delete as DeleteIcon } from "@mui/icons-material";
 import { useExpenseStore } from "../../../store";
 import { useStore } from "zustand";
+import moment from "moment";
 
 interface ExpenseProps {
   expense: Expense;
@@ -28,9 +29,9 @@ const ExpenseListItem: React.FC<ExpenseProps> = ({ expense }) => {
 
   return (
     <TableRow>
-      <TableCell>{expense.date}</TableCell>
+      <TableCell>{moment(expense.date).format("YYYY-MM-DD")}</TableCell>
       <TableCell>{expense.category}</TableCell>
-      <TableCell>${expense.amount}</TableCell>
+      <TableCell>${expense.amount.toFixed(2)}</TableCell>
       <TableCell>{expense.description}</TableCell>
       <TableCell>
         <IconButton onClick={handleDelete}>
