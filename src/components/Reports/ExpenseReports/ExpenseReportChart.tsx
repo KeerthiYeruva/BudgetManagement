@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BarChart, axisClasses } from "@mui/x-charts";
-import { Select, MenuItem, Typography } from "@mui/material";
+import { Select, MenuItem, Typography, SelectChangeEvent } from "@mui/material";
 import moment from "moment";
 import { useStore } from "zustand";
 import { useExpenseStore } from "../../../store";
@@ -9,7 +9,7 @@ const ExpensesBarChart: React.FC = () => {
   const { expenses } = useStore(useExpenseStore);
   const [selectedInterval, setSelectedInterval] = useState<string>("weekly");
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string): string => {
     const date = moment(dateString);
     if (selectedInterval === "weekly") {
       const weekStart = moment(date).startOf("isoWeek");
@@ -24,7 +24,7 @@ const ExpensesBarChart: React.FC = () => {
 
   const aggregatedExpenses: { [key: string]: number } = {};
   expenses.forEach((expense) => {
-    const formattedDate = formatDate(expense.date);
+    const formattedDate = formatDate(expense.date.toString()); // Ensure date is a string
     if (aggregatedExpenses[formattedDate]) {
       aggregatedExpenses[formattedDate] += expense.amount;
     } else {
@@ -37,7 +37,6 @@ const ExpensesBarChart: React.FC = () => {
     amount,
   }));
 
-  // Rest of the component
   const chartSettings = {
     yAxis: [
       {
@@ -55,15 +54,15 @@ const ExpensesBarChart: React.FC = () => {
 
   const valueFormatter = (value: number | null) => `$${value || 0}`;
 
-  const handleIntervalChange = (selectedInterval: string) => {
-    setSelectedInterval(selectedInterval);
+  const handleIntervalChange = (event: SelectChangeEvent<string>) => {
+    setSelectedInterval(event.target.value as string);
   };
 
   return (
     <div>
       <Select
         value={selectedInterval}
-        onChange={(e) => handleIntervalChange(e.target.value)}
+        onChange={handleIntervalChange}
         className="form-select mt-3"
       >
         <MenuItem value="weekly">Weekly</MenuItem>

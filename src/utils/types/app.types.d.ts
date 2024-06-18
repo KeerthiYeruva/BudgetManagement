@@ -20,7 +20,7 @@ interface User {
 
 interface Expense {
   id: number;
-  date: Date; // Changed to Date
+  date: Date;
   category: string;
   amount: number;
   description: string;
@@ -43,7 +43,7 @@ interface Budgets {
 
 interface Saving {
   amount: number;
-  date: Date; // Changed to Date
+  date: Date;
 }
 
 interface Goal {
