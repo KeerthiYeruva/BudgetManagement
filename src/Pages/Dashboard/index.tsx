@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import ExpensesByCategory from "../../components/ExpensesByCategory";
 import RecentTransactions from "../../components/RecentTransactions";
 import SummaryChart from "../../components/SummaryChart";
@@ -8,51 +8,24 @@ import { useStore } from "zustand";
 import { Grid, Typography, Alert, Container, Box } from "@mui/material";
 import "./dashboard.scss";
 
-const Dashboard: React.FC = () => {
-  const { expenses } = useStore(useExpenseStore);
-  const { user } = useStore(useUserProfileStore);
-  const [isFirstTimeLogin, setIsFirstTimeLogin] = useState(false);
+const calculateAnnualIncome = (income: number, period: string): number => {
+  switch (period) {
+    case "weekly":
+      return income * 52;
+    case "monthly":
+      return income * 12;
+    case "yearly":
+      return income;
+    default:
+      return income;
+  }
+};
 
-  useEffect(() => {
-    const firstTime = isUserFirstTime();
-    setIsFirstTimeLogin(firstTime);
-  }, []);
-
-  const isUserFirstTime = () => {
-    return !localStorage.getItem("hasLoggedInBefore");
-  };
-
-  useEffect(() => {
-    if (isFirstTimeLogin) {
-      localStorage.setItem("hasLoggedInBefore", "true");
-    }
-  }, [isFirstTimeLogin]);
-
-  const totalExpenses = expenses.reduce(
-    (total, expense) => total + expense.amount,
-    0
-  );
-
-  // Calculate balance based on the user's income period
-  const calculateAnnualIncome = (income, period) => {
-    switch (period) {
-      case "weekly":
-        return income * 52;
-      case "monthly":
-        return income * 12;
-      case "yearly":
-        return income;
-      default:
-        return income;
-    }
-  };
-
-  const annualIncome = calculateAnnualIncome(user?.income, user?.incomePeriod);
-  const balance = annualIncome - totalExpenses;
-  const totalTransactions = expenses.length;
-
-  const groupExpensesByCategory = (expenses) => {
-    return expenses.reduce((acc, expense) => {
+const groupExpensesByCategory = (
+  expenses: { category: string; amount: number }[]
+) => {
+  return expenses.reduce(
+    (acc, expense) => {
       const categoryIndex = acc.findIndex(
         (item) => item.label.toLowerCase() === expense.category.toLowerCase()
       );
@@ -62,18 +35,53 @@ const Dashboard: React.FC = () => {
         acc.push({ label: expense.category, value: expense.amount });
       }
       return acc;
-    }, []);
-  };
+    },
+    [] as { label: string; value: number }[]
+  );
+};
 
-  const recentTransactions = expenses.slice(0, 3);
-  const summaryChartData = groupExpensesByCategory(expenses);
+const Dashboard: React.FC = () => {
+  const { expenses } = useStore(useExpenseStore);
+  const { user } = useStore(useUserProfileStore);
+  const [isFirstTimeLogin, setIsFirstTimeLogin] = useState(false);
+
+  useEffect(() => {
+    const firstTime = !sessionStorage.getItem("hasLoggedInBefore");
+    setIsFirstTimeLogin(firstTime);
+    if (firstTime) {
+      sessionStorage.setItem("hasLoggedInBefore", "true");
+    }
+  }, []);
+
+  const totalExpenses = useMemo(
+    () => expenses.reduce((total, expense) => total + expense.amount, 0),
+    [expenses]
+  );
+
+  const annualIncome = useMemo(
+    () =>
+      calculateAnnualIncome(user?.income || 0, user?.incomePeriod || "monthly"),
+    [user]
+  );
+
+  const balance = useMemo(
+    () => annualIncome - totalExpenses,
+    [annualIncome, totalExpenses]
+  );
+
+  const recentTransactions = useMemo(() => expenses.slice(0, 3), [expenses]);
+
+  const summaryChartData = useMemo(
+    () => groupExpensesByCategory(expenses),
+    [expenses]
+  );
 
   return (
     <Container maxWidth="xl" className="dashboard-container">
       <Typography variant="h2" gutterBottom>
         Dashboard
       </Typography>
-      {isFirstTimeLogin && totalTransactions === 0 ? (
+      {isFirstTimeLogin && totalExpenses === 0 ? (
         <Alert severity="info">
           Welcome! It looks like you don't have any data yet. Start by adding
           your expenses.
@@ -97,7 +105,7 @@ const Dashboard: React.FC = () => {
               <InfoCard title="Balance" value={`$${balance.toFixed(2)}`} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <InfoCard title="Total Transactions" value={totalTransactions} />
+              <InfoCard title="Total Transactions" value={expenses.length} />
             </Grid>
           </Grid>
 
@@ -107,9 +115,7 @@ const Dashboard: React.FC = () => {
 
           <Grid container spacing={4}>
             <Grid item xs={12} md={6}>
-              <ExpensesByCategory
-                expensesByCategory={groupExpensesByCategory(expenses)}
-              />
+              <ExpensesByCategory expensesByCategory={summaryChartData} />
             </Grid>
             <Grid item xs={12} md={6}>
               <RecentTransactions transactions={recentTransactions} />

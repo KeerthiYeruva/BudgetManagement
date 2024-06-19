@@ -19,7 +19,6 @@ const AddExpense: React.FC = () => {
   const [date, setDate] = useState<string>(
     new Date().toISOString().split("T")[0]
   );
-
   const [category, setCategory] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -55,7 +54,7 @@ const AddExpense: React.FC = () => {
 
     const newExpense: Expense = {
       id: Math.floor(Math.random() * 1000),
-      date: selectedDate,
+      date: new Date(selectedDate), // Convert string to Date
       category: selectedCategory,
       amount: parseFloat(amount),
       description,
@@ -63,7 +62,7 @@ const AddExpense: React.FC = () => {
     addExpense(newExpense);
 
     notifySuccess("Expense added successfully");
-    setDate("");
+    setDate(new Date().toISOString().split("T")[0]);
     setCategory("");
     setAmount("");
     setDescription("");

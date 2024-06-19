@@ -6,13 +6,19 @@ interface UserProfileState {
   updateUserProfile: (updatedUser: Partial<User>) => void;
 }
 
+const getUserFromSessionStorage = (): User | null => {
+  const storedUser = sessionStorage.getItem("user");
+  return storedUser ? JSON.parse(storedUser) : null;
+};
+
+const setUserToSessionStorage = (user: User): void => {
+  sessionStorage.setItem("user", JSON.stringify(user));
+};
+
 export const useUserProfileStore = createStore<UserProfileState>((set) => ({
-  user: (() => {
-    const storedUser = localStorage.getItem("user");
-    return storedUser ? JSON.parse(storedUser) : null;
-  })(),
+  user: getUserFromSessionStorage(),
   setUser: (user: User) => {
-    localStorage.setItem("user", JSON.stringify(user));
+    setUserToSessionStorage(user);
     set({ user });
   },
   updateUserProfile: (updatedUser: Partial<User>) => {
@@ -21,7 +27,7 @@ export const useUserProfileStore = createStore<UserProfileState>((set) => ({
         throw new Error("User not set");
       }
       const newUser: User = { ...state.user, ...updatedUser };
-      localStorage.setItem("user", JSON.stringify(newUser));
+      setUserToSessionStorage(newUser);
       return { user: newUser };
     });
   },

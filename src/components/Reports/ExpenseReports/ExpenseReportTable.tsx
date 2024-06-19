@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useStore } from "zustand";
 import { useExpenseStore } from "../../../store";
+import moment from "moment";
 import {
   Box,
   FormControl,
@@ -22,31 +23,29 @@ const ExpenseReportTable: React.FC = () => {
   const [filterByCategory, setFilterByCategory] = useState<string>("All");
   const { expenses } = useStore(useExpenseStore);
 
-  let filteredExpenses = expenses;
-  if (filterByCategory !== "All") {
-    filteredExpenses = expenses.filter(
-      (expense) => expense.category === filterByCategory
-    );
-  }
+  const filteredExpenses = useMemo(() => {
+    let result = expenses;
+    if (filterByCategory !== "All") {
+      result = expenses.filter(
+        (expense) => expense.category === filterByCategory
+      );
+    }
 
-  // Sorting logic
-  if (sortBy === "date") {
-    if (sortOrder === "asc") {
-      filteredExpenses.sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-      );
-    } else {
-      filteredExpenses.sort(
-        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
+    // Sorting logic
+    if (sortBy === "date") {
+      result.sort((a, b) => {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      });
+    } else if (sortBy === "amount") {
+      result.sort((a, b) => {
+        return sortOrder === "asc" ? a.amount - b.amount : b.amount - a.amount;
+      });
     }
-  } else if (sortBy === "amount") {
-    if (sortOrder === "asc") {
-      filteredExpenses.sort((a, b) => a.amount - b.amount);
-    } else {
-      filteredExpenses.sort((a, b) => b.amount - a.amount);
-    }
-  }
+
+    return result;
+  }, [expenses, filterByCategory, sortBy, sortOrder]);
 
   return (
     <Box>
@@ -109,9 +108,11 @@ const ExpenseReportTable: React.FC = () => {
               <TableBody>
                 {filteredExpenses.map((expense) => (
                   <TableRow key={expense.id}>
-                    <TableCell>{expense.date}</TableCell>
+                    <TableCell>
+                      {moment(expense.date).format("YYYY-MM-DD")}
+                    </TableCell>
                     <TableCell>{expense.category}</TableCell>
-                    <TableCell>${expense.amount}</TableCell>
+                    <TableCell>${expense.amount.toFixed(2)}</TableCell>
                     <TableCell>{expense.description}</TableCell>
                   </TableRow>
                 ))}

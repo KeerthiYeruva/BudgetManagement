@@ -47,7 +47,6 @@
     "watch": "webpack --watch",
     "serve": "webpack serve",
     "clean": "rimraf node_modules && yarn install"
-    
   },
   "eslintConfig": {
     "extends": [

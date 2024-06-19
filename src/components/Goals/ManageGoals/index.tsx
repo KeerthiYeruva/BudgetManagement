@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   CircularProgress,
   Button,
@@ -26,17 +26,28 @@ const ManageGoals: React.FC = () => {
   const [savingDate, setSavingDate] = useState("");
   const [openEditModal, setOpenEditModal] = useState(false);
 
-  const calculateTotalSaving = (goal: Goal): number => {
-    if (goal?.savings && goal?.savings.length > 0) {
-      return goal.savings.reduce((total, saving) => total + saving.amount, 0);
-    }
-    return 0;
-  };
+  const calculateTotalSaving = useMemo(
+    () =>
+      (goal: Goal): number => {
+        if (goal?.savings && goal?.savings.length > 0) {
+          return goal.savings.reduce(
+            (total, saving) => total + saving.amount,
+            0
+          );
+        }
+        return 0;
+      },
+    []
+  );
 
-  const calculateProgress = (goal: Goal): number => {
-    const totalSaving = calculateTotalSaving(goal);
-    return (totalSaving / goal.budget) * 100;
-  };
+  const calculateProgress = useMemo(
+    () =>
+      (goal: Goal): number => {
+        const totalSaving = calculateTotalSaving(goal);
+        return (totalSaving / goal.budget) * 100;
+      },
+    [calculateTotalSaving]
+  );
 
   const handleSelectGoal = (goal: Goal) => {
     setSelectedGoal(goal);
@@ -54,9 +65,11 @@ const ManageGoals: React.FC = () => {
         name: goalName,
         budget: parseFloat(goalBudget),
         savings: [
-          ...(selectedGoal.savings || []).filter((s) => s.date !== savingDate),
+          ...(selectedGoal.savings || []).filter(
+            (s) => s.date.toISOString().split("T")[0] !== savingDate
+          ),
           {
-            date: savingDate,
+            date: new Date(savingDate), // Parse string to Date
             amount: parseFloat(savingAmount),
           },
         ],
