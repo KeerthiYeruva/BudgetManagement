@@ -8,19 +8,6 @@ import { useStore } from "zustand";
 import { Grid, Typography, Alert, Container, Box } from "@mui/material";
 import "./dashboard.scss";
 
-const calculateAnnualIncome = (income: number, period: string): number => {
-  switch (period) {
-    case "weekly":
-      return income * 52;
-    case "monthly":
-      return income * 12;
-    case "yearly":
-      return income;
-    default:
-      return income;
-  }
-};
-
 const groupExpensesByCategory = (
   expenses: { category: string; amount: number }[]
 ) => {
@@ -58,19 +45,9 @@ const Dashboard: React.FC = () => {
     [expenses]
   );
 
-  const annualIncome = useMemo(() => {
-    if (user?.income === undefined) {
-      return undefined;
-    }
-    return calculateAnnualIncome(user.income, user.incomePeriod || "monthly");
-  }, [user]);
-
   const balance = useMemo(() => {
-    if (annualIncome === undefined) {
-      return undefined;
-    }
-    return annualIncome - totalExpenses;
-  }, [annualIncome, totalExpenses]);
+    return user?.income ? user.income - totalExpenses : 0;
+  }, [user, totalExpenses]);
 
   const recentTransactions = useMemo(() => expenses.slice(0, 3), [expenses]);
 
@@ -84,50 +61,55 @@ const Dashboard: React.FC = () => {
       <Typography variant="h2" gutterBottom>
         Dashboard
       </Typography>
-      {isFirstTimeLogin && totalExpenses === 0 ? (
-        <Alert severity="info">
-          Welcome! It looks like you don't have any data yet. Start by adding
-          your expenses.
-        </Alert>
-      ) : user?.income === undefined ? (
-        <Alert severity="warning">
+      {user?.income === undefined ? (
+        <Alert severity="warning" sx={{ marginBottom: 2 }}>
           Please set your income in your profile.
         </Alert>
       ) : (
         <>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6} md={3}>
+              <InfoCard title="Total Expenses" value={`$${totalExpenses}`} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
               <InfoCard
-                title="Total Expenses"
-                value={`$${totalExpenses.toFixed(2)}`}
+                title="Monthly Income"
+                value={`$${user?.income || 0}`}
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <InfoCard
-                title={`Income (${user?.incomePeriod || "monthly"})`}
-                value={`$${user?.income}`}
+                title="Balance"
+                value={`$${(balance || 0).toFixed(2)}`}
               />
-            </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <InfoCard title="Balance" value={`$${balance?.toFixed(2)}`} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <InfoCard title="Total Transactions" value={expenses.length} />
             </Grid>
           </Grid>
+          {totalExpenses === 0 ? (
+            <Box sx={{ marginTop: 2 }}>
+              <Alert severity="info">
+                Welcome! It looks like you don't have any data yet. Start by
+                adding your expenses.
+              </Alert>
+            </Box>
+          ) : (
+            <>
+              <Box my={4}>
+                <SummaryChart data={summaryChartData} />
+              </Box>
 
-          <Box my={4}>
-            <SummaryChart data={summaryChartData} />
-          </Box>
-
-          <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
-              <ExpensesByCategory expensesByCategory={summaryChartData} />
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <RecentTransactions transactions={recentTransactions} />
-            </Grid>
-          </Grid>
+              <Grid container spacing={4}>
+                <Grid item xs={12} md={6}>
+                  <ExpensesByCategory expensesByCategory={summaryChartData} />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <RecentTransactions transactions={recentTransactions} />
+                </Grid>
+              </Grid>
+            </>
+          )}
         </>
       )}
     </Container>
