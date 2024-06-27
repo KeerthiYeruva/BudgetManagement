@@ -1,14 +1,9 @@
-// src/components/PrivateRoute.tsx
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { useAuthStore } from "../../store";
 import { useStore } from "zustand";
+import { useAuthStore } from "../../store"; // Ensure this is the correct path
 
-interface PrivateRouteProps {
-  element: React.ReactNode;
-}
-
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
+const PrivateRoute = ({ element }) => {
   const { isAuthenticated } = useStore(useAuthStore);
 
   return isAuthenticated ? element : <Navigate to="/login" replace />;

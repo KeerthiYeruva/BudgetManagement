@@ -3,7 +3,8 @@ import { Routes, Route } from "react-router-dom";
 import CssBaseline from "@mui/material/CssBaseline";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
-import Login from "./components/Login";
+import SignUp from "./components/SignUp"; // Ensure this import is correct
+import Login from "./components/Login"; // Add this import for the Login component
 import NotificationComponent from "./components/NotificationComponent";
 import Home from "./Pages/Home";
 import PrivateRoute from "./Routes/PrivateRoute";
@@ -23,6 +24,7 @@ function App() {
           <NotificationComponent />
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route path="/*" element={<PrivateRoute element={<Home />} />} />
           </Routes>
         </Box>

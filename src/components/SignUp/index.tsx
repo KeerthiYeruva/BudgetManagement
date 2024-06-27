@@ -11,23 +11,32 @@ import {
   Alert,
   Link,
 } from "@mui/material";
-import { mockLogin } from "../../services/authService"; // Replace with your actual login service
+import { mockSignup } from "../../services/authService";
 import { useAuthStore } from "../../store";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useStore } from "zustand";
 
-const Login: React.FC = () => {
+const Signup: React.FC = () => {
   const [formValues, setFormValues] = useState({
     email: "",
     password: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
   });
   const [formErrors, setFormErrors] = useState({
     email: "",
     password: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
   });
   const [touched, setTouched] = useState({
     email: false,
     password: false,
+    firstName: false,
+    lastName: false,
+    phoneNumber: false,
   });
   const { login } = useStore(useAuthStore);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +48,9 @@ const Login: React.FC = () => {
       const errors = {
         email: formValues.email ? "" : "Email is required",
         password: formValues.password ? "" : "Password is required",
+        firstName: formValues.firstName ? "" : "First name is required",
+        lastName: formValues.lastName ? "" : "Last name is required",
+        phoneNumber: formValues.phoneNumber ? "" : "Phone number is required",
       };
 
       setFormErrors(errors);
@@ -62,11 +74,11 @@ const Login: React.FC = () => {
     setIsLoading(true);
     setSubmissionError("");
     try {
-      const { token, user } = await mockLogin(formValues);
+      const { token, user } = await mockSignup(formValues);
       login(token, user);
       navigate("/");
     } catch (error) {
-      setSubmissionError("Login failed. Please try again.");
+      setSubmissionError("Signup failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +98,7 @@ const Login: React.FC = () => {
         }}
       >
         <Typography component="h1" variant="h5">
-          Log in
+          Sign up
         </Typography>
         {submissionError && (
           <Alert severity="error" sx={{ mt: 2, width: "100%" }}>
@@ -95,23 +107,28 @@ const Login: React.FC = () => {
         )}
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={3}>
-            {["email", "password"].map((field, index) => (
-              <Grid item xs={12} sm={12} key={index}>
-                <TextField
-                  required
-                  fullWidth
-                  id={field}
-                  label={field.charAt(0).toUpperCase() + field.slice(1)}
-                  name={field}
-                  type={field === "password" ? "password" : "text"}
-                  value={formValues[field]}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  error={touched[field] && !!formErrors[field]}
-                  helperText={touched[field] && formErrors[field]}
-                />
-              </Grid>
-            ))}
+            {["firstName", "lastName", "phoneNumber", "email", "password"].map(
+              (field, index) => (
+                <Grid item xs={12} sm={12} key={index}>
+                  <TextField
+                    required
+                    fullWidth
+                    id={field}
+                    label={
+                      field.charAt(0).toUpperCase() +
+                      field.slice(1).replace("Name", " Name")
+                    }
+                    name={field}
+                    type={field === "password" ? "password" : "text"}
+                    value={formValues[field]}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={touched[field] && !!formErrors[field]}
+                    helperText={touched[field] && formErrors[field]}
+                  />
+                </Grid>
+              )
+            )}
           </Grid>
           <Button
             type="submit"
@@ -120,12 +137,12 @@ const Login: React.FC = () => {
             sx={{ mt: 3, mb: 2 }}
             disabled={!isFormValid || isLoading}
           >
-            {isLoading ? <CircularProgress size={24} /> : "Log in"}
+            {isLoading ? <CircularProgress size={24} /> : "Sign up"}
           </Button>
           <Grid container justifyContent="flex-end">
             <Grid item>
-              <Link component={NavLink} to="/signup" variant="body2">
-                Don't have an account? Sign up
+              <Link component={NavLink} to="/login" variant="body2">
+                Already have an account? Log in
               </Link>
             </Grid>
           </Grid>
@@ -135,4 +152,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Signup;
