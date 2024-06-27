@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useStore } from "zustand";
 import { useUserProfileStore, useThemeStore } from "../../store";
 import {
@@ -25,13 +25,13 @@ const EditProfile: React.FC = () => {
     useStore(useThemeStore);
 
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
-    email: user?.email || "",
-    phoneNumber: user?.phoneNumber || "",
-    income: user?.income || 0,
-    incomePeriod: user?.incomePeriod || "monthly",
-    profilePicture: user?.profilePicture || "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    income: 0,
+    incomePeriod: "monthly" as "weekly" | "monthly" | "yearly",
+    profilePicture: "",
   });
 
   const [errors, setErrors] = useState({
@@ -45,6 +45,20 @@ const EditProfile: React.FC = () => {
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
     null
   );
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        phoneNumber: user.phoneNumber || "",
+        income: user.income || 0,
+        incomePeriod: user.incomePeriod || "monthly",
+        profilePicture: user.profilePicture || "",
+      });
+    }
+  }, []);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

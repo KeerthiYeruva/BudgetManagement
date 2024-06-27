@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import ExpensesByCategory from "../../components/ExpensesByCategory";
 import RecentTransactions from "../../components/RecentTransactions";
 import SummaryChart from "../../components/SummaryChart";
@@ -58,16 +58,19 @@ const Dashboard: React.FC = () => {
     [expenses]
   );
 
-  const annualIncome = useMemo(
-    () =>
-      calculateAnnualIncome(user?.income || 0, user?.incomePeriod || "monthly"),
-    [user]
-  );
+  const annualIncome = useMemo(() => {
+    if (user?.income === undefined) {
+      return undefined;
+    }
+    return calculateAnnualIncome(user.income, user.incomePeriod || "monthly");
+  }, [user]);
 
-  const balance = useMemo(
-    () => annualIncome - totalExpenses,
-    [annualIncome, totalExpenses]
-  );
+  const balance = useMemo(() => {
+    if (annualIncome === undefined) {
+      return undefined;
+    }
+    return annualIncome - totalExpenses;
+  }, [annualIncome, totalExpenses]);
 
   const recentTransactions = useMemo(() => expenses.slice(0, 3), [expenses]);
 
@@ -86,6 +89,10 @@ const Dashboard: React.FC = () => {
           Welcome! It looks like you don't have any data yet. Start by adding
           your expenses.
         </Alert>
+      ) : user?.income === undefined ? (
+        <Alert severity="warning">
+          Please set your income in your profile.
+        </Alert>
       ) : (
         <>
           <Grid container spacing={3}>
@@ -102,7 +109,7 @@ const Dashboard: React.FC = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <InfoCard title="Balance" value={`$${balance.toFixed(2)}`} />
+              <InfoCard title="Balance" value={`$${balance?.toFixed(2)}`} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <InfoCard title="Total Transactions" value={expenses.length} />

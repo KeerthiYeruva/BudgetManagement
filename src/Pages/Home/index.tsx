@@ -21,13 +21,13 @@ import {
   Edit as EditIcon,
 } from "@mui/icons-material";
 import MainRoutes from "../../Routes/MainRoutes";
-import { useAuthStore } from "../../store";
 import { useStore } from "zustand";
+import { useUserProfileStore } from "../../store";
 
 import "./home.scss";
 
 const Home: React.FC = () => {
-  const { user } = useStore(useAuthStore);
+  const user = useStore(useUserProfileStore, (state) => state.user);
 
   return (
     <Box display="flex" height="100vh">
