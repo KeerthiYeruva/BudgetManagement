@@ -36,7 +36,7 @@ export const useExpenseStore = createStore<ExpenseStore>((set) => ({
       updateSessionStorage("expenses", sortedExpenses);
 
       // Notify success
-      notifySuccess("Expense added successfully");
+      // notifySuccess("Expense added successfully");
 
       return { expenses: sortedExpenses };
     });

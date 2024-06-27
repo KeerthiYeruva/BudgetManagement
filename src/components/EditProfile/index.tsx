@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useStore } from "zustand";
 import { useUserProfileStore, useThemeStore } from "../../store";
 import {
@@ -7,31 +7,31 @@ import {
   TextField,
   Typography,
   Grid,
-  SelectChangeEvent,
   Avatar,
   IconButton,
-  InputAdornment,
-  MenuItem,
-  Select,
   Paper,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import ToggleColorMode from "../../styles/components/ToggleColorMode";
 import { ToggleCustomTheme } from "../../styles/components/ToggleCustomTheme";
 import { PhotoCamera } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import { notifySuccess } from "../../utils/util";
 
 const EditProfile: React.FC = () => {
   const { user, updateUserProfile } = useStore(useUserProfileStore);
   const { showCustomTheme, toggleCustomTheme, mode, toggleColorMode } =
     useStore(useThemeStore);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || "",
-    lastName: user?.lastName || "",
-    email: user?.email || "",
-    phoneNumber: user?.phoneNumber || "",
-    income: user?.income || 0,
-    incomePeriod: user?.incomePeriod || "monthly",
-    profilePicture: user?.profilePicture || "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    income: 0,
+    profilePicture: "",
   });
 
   const [errors, setErrors] = useState({
@@ -45,6 +45,20 @@ const EditProfile: React.FC = () => {
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(
     null
   );
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        phoneNumber: user.phoneNumber || "",
+        income: user.income || 0,
+        profilePicture: user.profilePicture || "",
+      });
+    }
+  }, [user]);
 
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -80,15 +94,6 @@ const EditProfile: React.FC = () => {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleIncomePeriodChange = (
-    event: SelectChangeEvent<"weekly" | "monthly" | "yearly">
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      incomePeriod: event.target.value as "weekly" | "monthly" | "yearly",
-    }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -143,14 +148,26 @@ const EditProfile: React.FC = () => {
         reader.onloadend = () => {
           if (typeof reader.result === "string") {
             updateUserProfile({ ...formData, profilePicture: reader.result });
+            setSuccess(true);
+            notifySuccess("Profile updated successfully");
           }
         };
         reader.readAsDataURL(profilePictureFile);
       } else {
         updateUserProfile(formData);
+        setSuccess(true);
+        notifySuccess("profile updated successfully");
       }
     }
   };
+
+  useEffect(() => {
+    if (success) {
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    }
+  }, [success, navigate]);
 
   return (
     <Box
@@ -264,25 +281,10 @@ const EditProfile: React.FC = () => {
             margin="normal"
             error={!!errors.income}
             helperText={errors.income}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <Select
-                    value={formData.incomePeriod}
-                    onChange={handleIncomePeriodChange}
-                    displayEmpty
-                    inputProps={{ "aria-label": "Income Period" }}
-                    sx={{ marginLeft: 1 }}
-                    size="small"
-                  >
-                    <MenuItem value="weekly">Weekly</MenuItem>
-                    <MenuItem value="monthly">Monthly</MenuItem>
-                    <MenuItem value="yearly">Yearly</MenuItem>
-                  </Select>
-                </InputAdornment>
-              ),
-            }}
           />
+          <Typography variant="caption" color="textSecondary">
+            Please enter your monthly income.
+          </Typography>
         </Grid>
       </Grid>
       <Button
@@ -293,6 +295,12 @@ const EditProfile: React.FC = () => {
       >
         Save
       </Button>
+      <Snackbar
+        open={success}
+        autoHideDuration={2000}
+        onClose={() => setSuccess(false)}
+        message="Profile updated successfully"
+      />
     </Box>
   );
 };

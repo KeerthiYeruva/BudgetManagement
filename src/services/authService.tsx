@@ -29,7 +29,33 @@ export const logout = () => {
   sessionStorage.removeItem("user");
 };
 
-export const mockLogin = async (userData: {
+export const mockLogin = async (credentials: {
+  email: string;
+  password: string;
+}): Promise<{ token: string; user: User }> => {
+  const { email, password } = credentials;
+  // Simulate an API call
+  return new Promise<{ token: string; user: User }>((resolve, reject) => {
+    setTimeout(() => {
+      if (email && password) {
+        resolve({
+          token: "mockToken123",
+          user: {
+            id: "mockUserId",
+            firstName: "John",
+            lastName: "Doe",
+            email,
+            phoneNumber: "1234567890",
+          },
+        });
+      } else {
+        reject("Invalid email or password");
+      }
+    }, 1000);
+  });
+};
+
+export const mockSignup = async (userData: {
   email: string;
   password: string;
   firstName: string;
@@ -40,7 +66,7 @@ export const mockLogin = async (userData: {
   // Simulate an API call
   return new Promise<{ token: string; user: User }>((resolve, reject) => {
     setTimeout(() => {
-      if (email && password) {
+      if (email && password && firstName && lastName && phoneNumber) {
         resolve({
           token: "mockToken123",
           user: {
@@ -52,7 +78,7 @@ export const mockLogin = async (userData: {
           },
         });
       } else {
-        reject("Invalid email or password");
+        reject("Missing required fields");
       }
     }, 1000);
   });
