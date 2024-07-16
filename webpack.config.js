@@ -19,10 +19,16 @@ const config = {
   devServer: {
     open: true,
     historyApiFallback: true, // Enable HTML5 History API fallback
+    static: {
+      directory: path.join(__dirname, "public"),
+    },
+    compress: true,
+    port: 3000,
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: "./public/index.html",
+      favicon: "./public/favicon.ico",
     }),
   ],
   module: {
@@ -41,8 +47,11 @@ const config = {
         use: [stylesHandler, "css-loader", "postcss-loader"],
       },
       {
-        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-        type: "asset",
+        test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif|ico)$/i,
+        type: "asset/resource",
+        generator: {
+          filename: "assets/[hash][ext][query]",
+        },
       },
     ],
   },
